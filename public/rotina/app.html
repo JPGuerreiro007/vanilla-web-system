@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Rotina Visual TEA — Pranchas e PEI</title>
+  <meta name="description" content="Crie rotinas visuais e registre o acompanhamento do PEI de alunos com TEA, com toque sequencial e alto contraste.">
+  <meta name="theme-color" content="#007BFF">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <a class="skip" href="#montagem">Pular para a montagem</a>
+  <header class="topbar">
+    <h1>🧩 Rotina Visual</h1>
+    <div class="topbar-actions">
+      <button class="btn btn-ghost" data-open="modal-categoria">＋ Categoria</button>
+      <button class="btn btn-success" data-open="painel-pei">📝 Comportamento</button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <!-- 1. Cadastrar rotina -->
+    <section class="card" aria-labelledby="t-rotina">
+      <h2 id="t-rotina">1. Cadastrar Rotina</h2>
+      <form id="form-rotina" class="grid-form">
+        <label>Aluno / Turma
+          <select id="aluno" required>
+            <option value="">Selecione…</option>
+            <option>Ana — 2º A</option>
+            <option>Bruno — 3º B</option>
+            <option>Caio — 1º C</option>
+            <option>Turma 2º A</option>
+          </select>
+        </label>
+        <label>Nome do cronograma
+          <input id="nome-rotina" type="text" placeholder="Ex.: Rotina Matutina" required>
+        </label>
+        <label>Horário
+          <input id="horario" type="time" value="07:30" required>
+        </label>
+        <button class="btn btn-primary" type="submit">Salvar rotina</button>
+      </form>
+      <p id="rotina-atual" class="hint" aria-live="polite"></p>
+    </section>
+
+    <!-- 3. Modelo de prancha -->
+    <section class="card" aria-labelledby="t-prancha">
+      <h2 id="t-prancha">2. Modelo da Prancha</h2>
+      <div class="modelos" role="radiogroup" aria-label="Modelo da prancha">
+        <label class="modelo">
+          <input type="radio" name="modelo" value="pd" checked>
+          <span class="modelo-box"><span class="mini"><i></i><i></i></span><strong>Primeiro / Depois</strong><small>2 espaços</small></span>
+        </label>
+        <label class="modelo">
+          <input type="radio" name="modelo" value="lt">
+          <span class="modelo-box"><span class="mini"><i></i><i></i><i></i><i></i><i></i></span><strong>Linha do Tempo</strong><small>
+            <select id="qtd-slots" aria-label="Quantidade de espaços">
+              <option>3</option><option>4</option><option selected>5</option><option>6</option><option>8</option>
+            </select> espaços</small></span>
+        </label>
+      </div>
+    </section>
+
+    <!-- 4. Montagem -->
+    <section class="card montagem" id="montagem" aria-labelledby="t-montagem">
+      <h2 id="t-montagem">3. Montagem</h2>
+      <p id="instrucao" class="instrucao" aria-live="polite">Toque em um pictograma da galeria.</p>
+      <div id="prancha" class="prancha" aria-label="Prancha"></div>
+      <button id="limpar" class="btn btn-ghost btn-sm" type="button">Limpar prancha</button>
+
+      <h3>Galeria</h3>
+      <div id="filtros" class="filtros" role="toolbar" aria-label="Filtro de categoria"></div>
+      <div id="galeria" class="galeria"></div>
+    </section>
+
+    <!-- 6. Relatório -->
+    <section class="card" aria-labelledby="t-rel">
+      <h2 id="t-rel">4. Gerar Relatório</h2>
+      <div class="filtro-rel" role="radiogroup" aria-label="Tipo de relatório">
+        <label class="chip-radio"><input type="radio" name="rel" value="completo" checked><span>Completo</span></label>
+        <label class="chip-radio"><input type="radio" name="rel" value="mes"><span>Comportamentos do mês</span></label>
+        <label class="chip-radio"><input type="radio" name="rel" value="prancha"><span>Apenas a prancha</span></label>
+      </div>
+      <button id="gerar-pdf" class="btn btn-primary btn-xl" type="button">🖨️ Gerar PDF para Impressão</button>
+    </section>
+  </main>
+
+  <!-- Área de impressão -->
+  <section id="print-area" class="print-area" aria-hidden="true"></section>
+
+  <!-- 2. Modal categoria -->
+  <dialog id="modal-categoria" class="modal">
+    <form method="dialog" id="form-categoria">
+      <h2>Nova Categoria</h2>
+      <label>Nome
+        <input id="cat-nome" type="text" placeholder="Ex.: Sentimentos" required>
+      </label>
+      <label>Emoji (opcional)
+        <input id="cat-emoji" type="text" maxlength="4" placeholder="😊">
+      </label>
+      <div class="row">
+        <button class="btn btn-ghost" value="cancel" formnovalidate>Cancelar</button>
+        <button class="btn btn-primary" value="ok">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- 5. Painel PEI -->
+  <dialog id="painel-pei" class="modal sidebar">
+    <form method="dialog" id="form-pei">
+      <h2>Registrar Comportamento</h2>
+      <fieldset>
+        <legend>Aluno</legend>
+        <div id="pei-alunos" class="chips"></div>
+      </fieldset>
+      <fieldset>
+        <legend>Nível de regulação emocional</legend>
+        <div class="niveis">
+          <label class="nivel calmo"><input type="radio" name="nivel" value="Calmo" required><span>🟢 Calmo</span></label>
+          <label class="nivel agitado"><input type="radio" name="nivel" value="Agitado"><span>🟡 Agitado</span></label>
+          <label class="nivel crise"><input type="radio" name="nivel" value="Crise"><span>🔴 Crise</span></label>
+        </div>
+      </fieldset>
+      <label>Observações do dia
+        <textarea id="pei-obs" rows="4" placeholder="O que aconteceu, gatilhos, estratégias usadas…"></textarea>
+      </label>
+      <div class="row">
+        <button class="btn btn-ghost" value="cancel" formnovalidate>Fechar</button>
+        <button class="btn btn-success" value="ok">Salvar silenciosamente</button>
+      </div>
+      <h3>Registros recentes</h3>
+      <ul id="pei-lista" class="pei-lista"></ul>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>

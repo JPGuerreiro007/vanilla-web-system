@@ -1,0 +1,10 @@
+{
+  "name": "Rotina Visual TEA",
+  "short_name": "Rotina",
+  "start_url": "/rotina/app.html",
+  "scope": "/rotina/",
+  "display": "standalone",
+  "background_color": "#F4F7F6",
+  "theme_color": "#007BFF",
+  "icons": [{ "src": "/favicon.ico", "sizes": "64x64", "type": "image/x-icon" }]
+}
