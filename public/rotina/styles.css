@@ -60,6 +60,9 @@ textarea{resize:vertical}
 .modal::backdrop{background:rgba(44,62,80,.55)}
 .modal form{display:grid;gap:1rem}
 .sidebar{margin:0 0 0 auto;height:100dvh;max-height:100dvh;border-radius:var(--r) 0 0 var(--r);overflow:auto}
+.sidebar{position:fixed;inset:0 0 0 auto;max-width:100vw;min-width:300px}
+.resize-handle{position:absolute;left:0;top:0;bottom:0;width:12px;cursor:ew-resize;touch-action:none;z-index:2}
+.resize-handle:hover,.resize-handle:focus-visible,.resize-handle.on{background:linear-gradient(to right,var(--pri) 0 4px,transparent 4px)}
 .row{display:flex;gap:.5rem;justify-content:flex-end;flex-wrap:wrap}
 fieldset{border:none;padding:0;margin:0}legend{font-weight:600;margin-bottom:.4rem}
 .niveis{display:grid;gap:.5rem}

@@ -182,6 +182,23 @@
     renderRegistros();
   });
 
+  // ---------- Redimensionar painel ----------
+  (function () {
+    var painel = $("#painel-pei"), h = painel.querySelector(".resize-handle");
+    var w = +localStorage.getItem(KEY + "-w"); if (w) painel.style.width = w + "px";
+    function set(px) { px = Math.max(300, Math.min(window.innerWidth, px)); painel.style.width = px + "px"; localStorage.setItem(KEY + "-w", px); }
+    h.addEventListener("pointerdown", function (e) {
+      e.preventDefault(); h.setPointerCapture(e.pointerId); h.classList.add("on");
+      function mv(ev) { set(window.innerWidth - ev.clientX); }
+      function up() { h.classList.remove("on"); h.removeEventListener("pointermove", mv); h.removeEventListener("pointerup", up); }
+      h.addEventListener("pointermove", mv); h.addEventListener("pointerup", up);
+    });
+    h.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft") set(painel.offsetWidth + 20);
+      if (e.key === "ArrowRight") set(painel.offsetWidth - 20);
+    });
+  })();
+
   // ---------- Relatório ----------
   $("#gerar-pdf").addEventListener("click", function () {
     var tipo = document.querySelector('input[name="rel"]:checked').value;
