@@ -162,13 +162,37 @@
       c.appendChild(l);
     });
   }
+  var armedI = null, armedH = null;
   function renderRegistros() {
     var ul = $("#pei-lista"); ul.innerHTML = "";
-    st.registros.slice(-5).reverse().forEach(function (r) {
-      ul.appendChild(el("li", {}, "<strong>" + r.nivel + "</strong> · " + r.aluno + "<br><small>" + new Date(r.data).toLocaleString("pt-BR") + "</small>" + (r.obs ? "<br>" + r.obs.replace(/</g, "&lt;") : "")));
-    });
+    armedI = null; clearTimeout(armedH);
+    var inicio = Math.max(0, st.registros.length - 5);
+    for (var i = st.registros.length - 1; i >= inicio; i--) {
+      var r = st.registros[i];
+      var quando = new Date(r.data).toLocaleString("pt-BR");
+      ul.appendChild(el("li", { "data-i": i },
+        '<div class="pei-txt"><strong>' + r.nivel + "</strong> · " + r.aluno +
+        "<br><small>" + quando + "</small>" + (r.obs ? "<br>" + r.obs.replace(/</g, "&lt;") : "") + "</div>" +
+        '<button class="btn btn-del" type="button" data-del="' + i + '" aria-label="Excluir registro de ' + r.aluno + ', ' + quando + '">🗑️ Excluir</button>'));
+    }
     if (!st.registros.length) ul.innerHTML = '<li class="hint">Sem registros.</li>';
   }
+  $("#pei-lista").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-del]"); if (!b) return;
+    var i = +b.dataset.del;
+    if (armedI !== i) {
+      armedI = i;
+      b.textContent = "Confirmar exclusão?";
+      b.classList.add("confirmar");
+      clearTimeout(armedH);
+      armedH = setTimeout(function () { renderRegistros(); }, 5000);
+      return;
+    }
+    var r = st.registros.splice(i, 1)[0];
+    armedI = null; clearTimeout(armedH);
+    salvar(); renderRegistros();
+    toast("Registro de " + r.aluno + " excluído");
+  });
   $("#form-pei").addEventListener("submit", function (e) {
     if (e.submitter && e.submitter.value === "cancel") return;
     e.preventDefault(); // mantém o painel aberto

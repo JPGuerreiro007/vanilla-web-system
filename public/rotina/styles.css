@@ -71,7 +71,10 @@ fieldset{border:none;padding:0;margin:0}legend{font-weight:600;margin-bottom:.4r
 .agitado input:checked+span{border-color:#D39E00;background:#FFF6D9}
 .crise input:checked+span{border-color:var(--bad);background:#FCE8EA}
 .pei-lista{list-style:none;padding:0;margin:0;display:grid;gap:.5rem;font-size:.9rem}
-.pei-lista li{border:2px solid var(--line);border-radius:10px;padding:.5rem .75rem}
+.pei-lista li{display:flex;gap:.5rem;align-items:center;justify-content:space-between;border:2px solid var(--line);border-radius:10px;padding:.5rem .75rem}
+.pei-txt{min-width:0}
+.btn-del{flex:0 0 auto;min-height:44px;padding:.35rem .8rem;font-size:.85rem;background:#fff;color:var(--bad);border-color:var(--bad)}
+.btn-del.confirmar{background:var(--bad);color:#fff}
 
 .toast{position:fixed;left:50%;bottom:1rem;transform:translateX(-50%);background:var(--txt);color:#fff;padding:.75rem 1.25rem;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s}
 .toast.on{opacity:1}
