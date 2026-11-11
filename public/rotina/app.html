@@ -69,7 +69,10 @@
       <div id="prancha" class="prancha" aria-label="Prancha"></div>
       <button id="limpar" class="btn btn-ghost btn-sm" type="button">Limpar prancha</button>
 
-      <h3>Galeria</h3>
+      <div class="galeria-head">
+        <h3 id="t-galeria">Galeria</h3>
+        <button class="btn btn-primary btn-sm" type="button" id="abrir-picto" aria-haspopup="dialog">＋ Adicionar pictograma</button>
+      </div>
       <div id="filtros" class="filtros" role="toolbar" aria-label="Filtro de categoria"></div>
       <div id="galeria" class="galeria"></div>
     </section>
@@ -99,6 +102,30 @@
       <label>Emoji (opcional)
         <input id="cat-emoji" type="text" maxlength="4" placeholder="😊">
       </label>
+      <div class="row">
+        <button class="btn btn-ghost" value="cancel" formnovalidate>Cancelar</button>
+        <button class="btn btn-primary" value="ok">Salvar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Modal pictograma -->
+  <dialog id="modal-picto" class="modal" aria-labelledby="t-picto">
+    <form method="dialog" id="form-picto">
+      <h2 id="t-picto">Novo Pictograma</h2>
+      <label for="picto-nome">Nome do pictograma</label>
+      <input id="picto-nome" type="text" placeholder="Ex.: Dormir" required>
+      <label for="picto-emoji">Emoji</label>
+      <input id="picto-emoji" type="text" maxlength="4" placeholder="⭐ (padrão se vazio)">
+      <label for="picto-cat">Categoria</label>
+      <select id="picto-cat" required></select>
+      <fieldset id="nova-cat" class="nova-cat" hidden>
+        <legend>Nova categoria</legend>
+        <label for="nova-cat-nome">Nome da nova categoria</label>
+        <input id="nova-cat-nome" type="text">
+        <label for="nova-cat-emoji">Emoji da categoria (opcional)</label>
+        <input id="nova-cat-emoji" type="text" maxlength="4" placeholder="⭐">
+      </fieldset>
       <div class="row">
         <button class="btn btn-ghost" value="cancel" formnovalidate>Cancelar</button>
         <button class="btn btn-primary" value="ok">Salvar</button>

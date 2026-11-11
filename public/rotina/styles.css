@@ -97,3 +97,12 @@ fieldset{border:none;padding:0;margin:0}legend{font-weight:600;margin-bottom:.4r
   .print-area table{width:100%;border-collapse:collapse;margin-top:1rem}
   .print-area td,.print-area th{border:1px solid #000;padding:6px;text-align:left;font-size:12pt}
 }
+
+.galeria-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-top:1rem}
+.galeria-head h3{margin:0}
+.galeria-head .btn-sm{margin-top:0}
+.modal select{min-height:44px;font:inherit;padding:.5rem;border:2px solid currentColor;border-radius:8px;background:#fff;color:inherit}
+.nova-cat{display:grid;gap:.5rem;border:2px dashed currentColor;border-radius:8px;padding:.75rem}
+.nova-cat[hidden]{display:none}
+#form-picto>label,.nova-cat label{font-weight:600}
+#form-picto input{min-height:44px}

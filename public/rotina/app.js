@@ -148,9 +148,48 @@
     var id = "c" + Date.now();
     var emoji = $("#cat-emoji").value.trim() || "⭐";
     st.categorias.push({ id: id, nome: nome, emoji: emoji });
-    st.pictos.push({ id: "p" + Date.now(), emoji: emoji, nome: nome, cat: id });
     filtro = id; salvar(); renderFiltros(); renderGaleria();
     e.target.reset(); toast("Categoria “" + nome + "” criada");
+  });
+
+  // ---------- Novo pictograma ----------
+  var NOVA = "__nova__";
+  function toggleNovaCat() {
+    var nova = $("#picto-cat").value === NOVA;
+    $("#nova-cat").hidden = !nova;
+    $("#nova-cat-nome").required = nova;
+  }
+  $("#abrir-picto").addEventListener("click", function () {
+    var s = $("#picto-cat"); s.innerHTML = "";
+    st.categorias.forEach(function (c) {
+      var o = el("option", { value: c.id }); o.textContent = c.emoji + " " + c.nome; s.appendChild(o);
+    });
+    var o = el("option", { value: NOVA }); o.textContent = "＋ Criar nova categoria…"; s.appendChild(o);
+    if (filtro !== "todas" && st.categorias.some(function (c) { return c.id === filtro; })) s.value = filtro;
+    toggleNovaCat();
+    $("#modal-picto").showModal();
+    $("#picto-nome").focus();
+  });
+  $("#picto-cat").addEventListener("change", toggleNovaCat);
+  $("#form-picto").addEventListener("submit", function (e) {
+    if (e.submitter && e.submitter.value === "cancel") { e.target.reset(); toggleNovaCat(); return; }
+    var nome = $("#picto-nome").value.trim();
+    if (!nome) { e.preventDefault(); toast("Informe o nome do pictograma"); $("#picto-nome").focus(); return; }
+    var emoji = $("#picto-emoji").value.trim() || "⭐";
+    var cat = $("#picto-cat").value;
+    if (cat === NOVA) {
+      var cn = $("#nova-cat-nome").value.trim();
+      if (!cn) { e.preventDefault(); toast("Informe o nome da nova categoria"); $("#nova-cat-nome").focus(); return; }
+      if (st.categorias.some(function (c) { return c.nome.toLowerCase() === cn.toLowerCase(); })) {
+        e.preventDefault(); toast("⚠ Já existe uma categoria “" + cn + "”"); $("#nova-cat-nome").focus(); return;
+      }
+      cat = "c" + Date.now();
+      st.categorias.push({ id: cat, nome: cn, emoji: $("#nova-cat-emoji").value.trim() || "⭐" });
+    }
+    st.pictos.push({ id: "p" + Date.now() + Math.random().toString(36).slice(2, 6), emoji: emoji, nome: nome, cat: cat });
+    filtro = cat; salvar(); renderFiltros(); renderGaleria();
+    toast("Pictograma “" + nome + "” adicionado");
+    e.target.reset(); toggleNovaCat();
   });
 
   function renderPeiAlunos() {
