@@ -99,9 +99,9 @@
       <label>Nome
         <input id="cat-nome" type="text" placeholder="Ex.: Sentimentos" required>
       </label>
-      <label>Emoji (opcional)
-        <input id="cat-emoji" type="text" maxlength="4" placeholder="😊">
-      </label>
+      <fieldset><legend id="cat-emoji-label">Emoji da categoria</legend>
+        <div id="cat-emoji" class="emoji-grid" role="radiogroup" aria-labelledby="cat-emoji-label"></div>
+      </fieldset>
       <div class="row">
         <button class="btn btn-ghost" value="cancel" formnovalidate>Cancelar</button>
         <button class="btn btn-primary" value="ok">Salvar</button>
@@ -115,16 +115,18 @@
       <h2 id="t-picto">Novo Pictograma</h2>
       <label for="picto-nome">Nome do pictograma</label>
       <input id="picto-nome" type="text" placeholder="Ex.: Dormir" required>
-      <label for="picto-emoji">Emoji</label>
-      <input id="picto-emoji" type="text" maxlength="4" placeholder="⭐ (padrão se vazio)">
+      <fieldset><legend id="picto-emoji-label">Emoji</legend>
+        <div id="picto-emoji" class="emoji-grid" role="radiogroup" aria-labelledby="picto-emoji-label"></div>
+      </fieldset>
       <label for="picto-cat">Categoria</label>
       <select id="picto-cat" required></select>
       <fieldset id="nova-cat" class="nova-cat" hidden>
         <legend>Nova categoria</legend>
         <label for="nova-cat-nome">Nome da nova categoria</label>
         <input id="nova-cat-nome" type="text">
-        <label for="nova-cat-emoji">Emoji da categoria (opcional)</label>
-        <input id="nova-cat-emoji" type="text" maxlength="4" placeholder="⭐">
+        <fieldset><legend id="nova-cat-emoji-label">Emoji da categoria</legend>
+          <div id="nova-cat-emoji" class="emoji-grid" role="radiogroup" aria-labelledby="nova-cat-emoji-label"></div>
+        </fieldset>
       </fieldset>
       <div class="row">
         <button class="btn btn-ghost" value="cancel" formnovalidate>Cancelar</button>
@@ -162,7 +164,10 @@
     </form>
   </dialog>
 
-  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+   <footer class="credits">Emojis: Twemoji © Twitter/X e colaboradores, licença <a href="https://creativecommons.org/licenses/by/4.0/" rel="license">CC-BY 4.0</a>.</footer>
+   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+   <script src="emoji.js"></script>
+   <script src="offline.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

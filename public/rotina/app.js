@@ -1,6 +1,9 @@
 (function () {
   "use strict";
   var $ = function (s) { return document.querySelector(s); };
+  var emo = window.RotinaEmoji.emo;
+  document.querySelectorAll(".emoji-grid").forEach(window.RotinaEmoji.init);
+  window.RotinaEmoji.decorate(document.body);
   var KEY = "rotina-tea-v1";
   var ALUNOS = ["Ana — 2º A", "Bruno — 3º B", "Caio — 1º C", "Turma 2º A"];
 
@@ -29,7 +32,7 @@
   var salvar = function () { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
 
   function toast(msg) {
-    var t = $("#toast"); t.textContent = msg; t.classList.add("on");
+    var t = $("#toast"); t.textContent = msg; window.RotinaEmoji.decorate(t); t.classList.add("on");
     clearTimeout(toast.h); toast.h = setTimeout(function () { t.classList.remove("on"); }, 2200);
   }
   function el(tag, attrs, html) {
@@ -84,7 +87,7 @@
       var b = el("button", { type: "button", class: "slot" + (p ? " cheio" : ""), "data-i": i,
         "aria-label": rotuloSlot(i) + ": " + (p ? p.nome + ". Toque para remover" : "vazio") });
       b.innerHTML = '<span class="rot">' + rotuloSlot(i) + "</span>" +
-        (p ? '<span class="emo" aria-hidden="true">' + p.emoji + "</span><span>" + p.nome + "</span>" : "<span>＋ vazio</span>");
+        (p ? '<span class="emo" aria-hidden="true">' + emo(p.emoji) + "</span><span>" + p.nome + "</span>" : "<span>＋ vazio</span>");
       box.appendChild(b);
     });
     if (!alvo) $("#montagem").classList.toggle("alvo", !!selecionado);
@@ -114,7 +117,7 @@
   function renderFiltros() {
     var f = $("#filtros"); f.innerHTML = "";
     [{ id: "todas", nome: "Todas", emoji: "✨" }].concat(st.categorias).forEach(function (c) {
-      var b = el("button", { type: "button", class: "filtro", "data-c": c.id, "aria-pressed": String(filtro === c.id) }, c.emoji + " " + c.nome);
+      var b = el("button", { type: "button", class: "filtro", "data-c": c.id, "aria-pressed": String(filtro === c.id) }, emo(c.emoji) + " " + c.nome);
       f.appendChild(b);
     });
   }
@@ -128,7 +131,7 @@
     if (!lista.length) { g.innerHTML = '<p class="hint">Nenhum pictograma nesta categoria ainda.</p>'; return; }
     lista.forEach(function (p) {
       var b = el("button", { type: "button", class: "picto", "data-id": p.id, "aria-pressed": String(selecionado === p.id) },
-        '<span class="emo" aria-hidden="true">' + p.emoji + "</span><span>" + p.nome + "</span>");
+        '<span class="emo" aria-hidden="true">' + emo(p.emoji) + "</span><span>" + p.nome + "</span>");
       g.appendChild(b);
     });
   }
@@ -143,17 +146,21 @@
     b.addEventListener("click", function () { var d = document.getElementById(b.dataset.open); d.showModal(); });
   });
   $("#form-categoria").addEventListener("submit", function (e) {
-    if (e.submitter && e.submitter.value === "cancel") return;
+    if (e.submitter && e.submitter.value === "cancel") { e.target.reset(); window.RotinaEmoji.reset($("#cat-emoji")); return; }
     var nome = $("#cat-nome").value.trim(); if (!nome) return;
     var id = "c" + Date.now();
-    var emoji = $("#cat-emoji").value.trim() || "⭐";
+    var emoji = $("#cat-emoji").dataset.emoji || "⭐";
     st.categorias.push({ id: id, nome: nome, emoji: emoji });
     filtro = id; salvar(); renderFiltros(); renderGaleria();
-    e.target.reset(); toast("Categoria “" + nome + "” criada");
+    e.target.reset(); window.RotinaEmoji.reset($("#cat-emoji")); toast("Categoria “" + nome + "” criada");
   });
 
   // ---------- Novo pictograma ----------
   var NOVA = "__nova__";
+  function resetPictoEmojis() {
+    window.RotinaEmoji.reset($("#picto-emoji"));
+    window.RotinaEmoji.reset($("#nova-cat-emoji"));
+  }
   function toggleNovaCat() {
     var nova = $("#picto-cat").value === NOVA;
     $("#nova-cat").hidden = !nova;
@@ -172,10 +179,10 @@
   });
   $("#picto-cat").addEventListener("change", toggleNovaCat);
   $("#form-picto").addEventListener("submit", function (e) {
-    if (e.submitter && e.submitter.value === "cancel") { e.target.reset(); toggleNovaCat(); return; }
+    if (e.submitter && e.submitter.value === "cancel") { e.target.reset(); resetPictoEmojis(); toggleNovaCat(); return; }
     var nome = $("#picto-nome").value.trim();
     if (!nome) { e.preventDefault(); toast("Informe o nome do pictograma"); $("#picto-nome").focus(); return; }
-    var emoji = $("#picto-emoji").value.trim() || "⭐";
+    var emoji = $("#picto-emoji").dataset.emoji || "⭐";
     var cat = $("#picto-cat").value;
     if (cat === NOVA) {
       var cn = $("#nova-cat-nome").value.trim();
@@ -184,12 +191,12 @@
         e.preventDefault(); toast("⚠ Já existe uma categoria “" + cn + "”"); $("#nova-cat-nome").focus(); return;
       }
       cat = "c" + Date.now();
-      st.categorias.push({ id: cat, nome: cn, emoji: $("#nova-cat-emoji").value.trim() || "⭐" });
+      st.categorias.push({ id: cat, nome: cn, emoji: $("#nova-cat-emoji").dataset.emoji || "⭐" });
     }
     st.pictos.push({ id: "p" + Date.now() + Math.random().toString(36).slice(2, 6), emoji: emoji, nome: nome, cat: cat });
     filtro = cat; salvar(); renderFiltros(); renderGaleria();
     toast("Pictograma “" + nome + "” adicionado");
-    e.target.reset(); toggleNovaCat();
+    e.target.reset(); resetPictoEmojis(); toggleNovaCat();
   });
 
   function renderPeiAlunos() {
@@ -214,6 +221,7 @@
         "<br><small>" + quando + "</small>" + (r.obs ? "<br>" + r.obs.replace(/</g, "&lt;") : "") + "</div>" +
         '<button class="btn btn-del" type="button" data-del="' + i + '" aria-label="Excluir registro de ' + r.aluno + ', ' + quando + '">🗑️ Excluir</button>'));
     }
+    window.RotinaEmoji.decorate(ul);
     if (!st.registros.length) ul.innerHTML = '<li class="hint">Sem registros.</li>';
   }
   $("#pei-lista").addEventListener("click", function (e) {
@@ -283,8 +291,18 @@
       }).join("") || '<tr><td colspan="4">Sem registros.</td></tr>';
       area.appendChild(el("table", {}, "<thead><tr><th>Data</th><th>Aluno</th><th>Nível</th><th>Observações</th></tr></thead><tbody>" + rows + "</tbody>"));
     }
-    window.print();
+    // Lazy images must load before opening the print dialog.
+    var images = Array.from(area.querySelectorAll("img.emo-img"));
+    Promise.all(images.map(function (image) {
+      image.loading = "eager";
+      if (image.complete) return Promise.resolve();
+      return new Promise(function (resolve) {
+        image.addEventListener("load", resolve, { once: true });
+        image.addEventListener("error", resolve, { once: true });
+      });
+    })).then(function () { window.print(); });
   });
 
+  if (window.RotinaOffline) window.RotinaOffline.register();
   ajustarSlots(); renderRotina(); renderFiltros(); renderGaleria(); renderPrancha(); renderPeiAlunos(); renderRegistros();
 })();

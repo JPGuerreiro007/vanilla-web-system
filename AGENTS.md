@@ -28,3 +28,6 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+- Keep emoji rendering and accessible pickers in the standalone app's emoji module so saved native emoji values remain backward compatible.
+- Generate the standalone app-shell worker with vite-plugin-pwa outside the app source; its single registration wrapper must exclude editor previews, and HTML navigations must remain NetworkFirst so updates are not stranded in cache.
