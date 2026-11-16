@@ -65,7 +65,7 @@
     <!-- 4. Montagem -->
     <section class="card montagem" id="montagem" aria-labelledby="t-montagem">
       <h2 id="t-montagem">3. Montagem</h2>
-      <p id="instrucao" class="instrucao" aria-live="polite">Toque em um pictograma da galeria.</p>
+      <p id="instrucao" class="instrucao" aria-live="polite">Toque num espaço vazio para escolher o pictograma, ou escolha na galeria e depois toque no espaço</p>
       <div id="prancha" class="prancha" aria-label="Prancha"></div>
       <button id="limpar" class="btn btn-ghost btn-sm" type="button">Limpar prancha</button>
 
@@ -93,6 +93,18 @@
   <section id="print-area" class="print-area" aria-hidden="true"></section>
 
   <!-- 2. Modal categoria -->
+  <dialog id="modal-slot" class="modal slot-modal" aria-label="Escolher pictograma para o espaço">
+    <h2>Escolher pictograma</h2>
+    <p id="slot-posicao" class="hint"></p>
+    <div id="slot-filtros" class="filtros" role="group" aria-label="Filtro de categoria"></div>
+    <div id="slot-galeria" class="galeria" role="group" aria-label="Pictogramas disponíveis"></div>
+    <div class="slot-actions">
+      <button id="slot-adicionar" class="btn btn-primary" type="button">＋ Adicionar pictograma</button>
+      <button id="slot-remover" class="btn btn-ghost" type="button" hidden>Remover deste espaço</button>
+      <button id="slot-fechar" class="btn btn-ghost" type="button">Fechar</button>
+    </div>
+  </dialog>
+
   <dialog id="modal-categoria" class="modal">
     <form method="dialog" id="form-categoria">
       <h2>Nova Categoria</h2>
@@ -101,6 +113,11 @@
       </label>
       <fieldset><legend id="cat-emoji-label">Emoji da categoria</legend>
         <div id="cat-emoji" class="emoji-grid" role="radiogroup" aria-labelledby="cat-emoji-label"></div>
+        <label for="cat-emoji-livre">Ou digite/cole outro emoji</label>
+        <input id="cat-emoji-livre" type="text" aria-describedby="cat-emoji-dica cat-emoji-erro" autocomplete="off">
+        <small id="cat-emoji-dica" class="hint">No computador: Windows + . ou Ctrl+Cmd+Espaço no Mac</small>
+        <p id="cat-emoji-erro" class="emoji-error" aria-live="polite"></p>
+        <span id="cat-emoji-preview" class="emoji-preview" role="img" aria-label="Emoji escolhido: ⭐"></span>
       </fieldset>
       <div class="row">
         <button class="btn btn-ghost" value="cancel" formnovalidate>Cancelar</button>
@@ -117,6 +134,11 @@
       <input id="picto-nome" type="text" placeholder="Ex.: Dormir" required>
       <fieldset><legend id="picto-emoji-label">Emoji</legend>
         <div id="picto-emoji" class="emoji-grid" role="radiogroup" aria-labelledby="picto-emoji-label"></div>
+        <label for="picto-emoji-livre">Ou digite/cole outro emoji</label>
+        <input id="picto-emoji-livre" type="text" aria-describedby="picto-emoji-dica picto-emoji-erro" autocomplete="off">
+        <small id="picto-emoji-dica" class="hint">No computador: Windows + . ou Ctrl+Cmd+Espaço no Mac</small>
+        <p id="picto-emoji-erro" class="emoji-error" aria-live="polite"></p>
+        <span id="picto-emoji-preview" class="emoji-preview" role="img" aria-label="Emoji escolhido: ⭐"></span>
       </fieldset>
       <label for="picto-cat">Categoria</label>
       <select id="picto-cat" required></select>
@@ -126,6 +148,11 @@
         <input id="nova-cat-nome" type="text">
         <fieldset><legend id="nova-cat-emoji-label">Emoji da categoria</legend>
           <div id="nova-cat-emoji" class="emoji-grid" role="radiogroup" aria-labelledby="nova-cat-emoji-label"></div>
+          <label for="nova-cat-emoji-livre">Ou digite/cole outro emoji</label>
+          <input id="nova-cat-emoji-livre" type="text" aria-describedby="nova-cat-emoji-dica nova-cat-emoji-erro" autocomplete="off">
+          <small id="nova-cat-emoji-dica" class="hint">No computador: Windows + . ou Ctrl+Cmd+Espaço no Mac</small>
+          <p id="nova-cat-emoji-erro" class="emoji-error" aria-live="polite"></p>
+          <span id="nova-cat-emoji-preview" class="emoji-preview" role="img" aria-label="Emoji escolhido: ⭐"></span>
         </fieldset>
       </fieldset>
       <div class="row">

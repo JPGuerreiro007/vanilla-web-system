@@ -85,7 +85,7 @@
     st.slots.forEach(function (pid, i) {
       var p = pid && picto(pid);
       var b = el("button", { type: "button", class: "slot" + (p ? " cheio" : ""), "data-i": i,
-        "aria-label": rotuloSlot(i) + ": " + (p ? p.nome + ". Toque para remover" : "vazio") });
+        "aria-label": rotuloSlot(i) + ": " + (p ? p.nome + ". Toque para escolher ou remover" : "vazio. Toque para escolher") });
       b.innerHTML = '<span class="rot">' + rotuloSlot(i) + "</span>" +
         (p ? '<span class="emo" aria-hidden="true">' + emo(p.emoji) + "</span><span>" + p.nome + "</span>" : "<span>＋ vazio</span>");
       box.appendChild(b);
@@ -99,10 +99,7 @@
       st.slots[i] = selecionado;
       toast(picto(selecionado).nome + " → " + rotuloSlot(i));
       selecionado = null;
-    } else if (st.slots[i]) {
-      toast(picto(st.slots[i]).nome + " removido");
-      st.slots[i] = null;
-    } else { toast("Escolha um pictograma primeiro"); return; }
+    } else { abrirSlot(i); return; }
     salvar(); renderPrancha(); renderGaleria(); instrucao();
   });
   $("#limpar").addEventListener("click", function () { st.slots = st.slots.map(function () { return null; }); salvar(); renderPrancha(); });
@@ -110,7 +107,7 @@
   function instrucao() {
     $("#instrucao").textContent = selecionado
       ? "✔ " + picto(selecionado).nome + " selecionado. Agora toque em um espaço da prancha."
-      : "Toque em um pictograma da galeria.";
+      : "Toque num espaço vazio para escolher o pictograma, ou escolha na galeria e depois toque no espaço";
   }
 
   // ---------- Galeria ----------
@@ -142,6 +139,60 @@
   });
 
   // ---------- Modais ----------
+  var slotDialog = $("#modal-slot"), slotAtual = null, filtroSlot = "todas", abrirNovoDoSlot = false;
+  function renderSlot() {
+    var filtros = $("#slot-filtros"), grade = $("#slot-galeria");
+    filtros.innerHTML = ""; grade.innerHTML = "";
+    [{ id: "todas", nome: "Todas", emoji: "✨" }].concat(st.categorias).forEach(function (c) {
+      var b = el("button", { type: "button", class: "filtro", "data-c": c.id, "aria-pressed": String(filtroSlot === c.id) });
+      b.innerHTML = emo(c.emoji); b.appendChild(document.createTextNode(" " + c.nome)); filtros.appendChild(b);
+    });
+    st.pictos.filter(function (p) { return filtroSlot === "todas" || p.cat === filtroSlot; }).forEach(function (p) {
+      var b = el("button", { type: "button", class: "picto", "data-id": p.id, "aria-pressed": String(st.slots[slotAtual] === p.id) });
+      var imagem = el("span", { class: "emo", "aria-hidden": "true" }, emo(p.emoji));
+      var nome = el("span", {}); nome.textContent = p.nome;
+      b.appendChild(imagem); b.appendChild(nome); grade.appendChild(b);
+    });
+    if (!grade.children.length) { var vazio = el("p", { class: "hint" }); vazio.textContent = "Nenhum pictograma nesta categoria ainda."; grade.appendChild(vazio); }
+    $("#slot-remover").hidden = !st.slots[slotAtual];
+  }
+  function abrirSlot(i) {
+    slotAtual = i; filtroSlot = "todas";
+    slotDialog.setAttribute("aria-label", "Escolher pictograma para o espaço " + (i + 1));
+    $("#slot-posicao").textContent = "Espaço " + (i + 1) + " · " + rotuloSlot(i);
+    renderSlot(); slotDialog.showModal();
+    var primeiro = $("#slot-galeria .picto") || $("#slot-fechar"); primeiro.focus();
+  }
+  slotDialog.addEventListener("close", function () {
+    var i = slotAtual; slotAtual = null;
+    if (abrirNovoDoSlot) { abrirNovoDoSlot = false; abrirPicto(); return; }
+    var slot = document.querySelector('#prancha .slot[data-i="' + i + '"]'); if (slot) slot.focus();
+  });
+  var foraSlot = false;
+  function foraDoDialog(e) {
+    var r = slotDialog.getBoundingClientRect();
+    return e.target === slotDialog && (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom);
+  }
+  slotDialog.addEventListener("pointerdown", function (e) { foraSlot = foraDoDialog(e); });
+  slotDialog.addEventListener("click", function (e) { if (foraSlot && foraDoDialog(e)) slotDialog.close(); foraSlot = false; });
+  $("#slot-fechar").addEventListener("click", function () { slotDialog.close(); });
+  $("#slot-filtros").addEventListener("click", function (e) {
+    var b = e.target.closest(".filtro"); if (!b) return;
+    filtroSlot = b.dataset.c; renderSlot();
+    var ativo = $("#slot-filtros [aria-pressed=true]"); if (ativo) ativo.focus();
+  });
+  $("#slot-galeria").addEventListener("click", function (e) {
+    var b = e.target.closest(".picto"); if (!b || slotAtual === null) return;
+    var p = picto(b.dataset.id); if (!p) return;
+    st.slots[slotAtual] = p.id; salvar(); renderPrancha(); renderGaleria(); instrucao();
+    toast(p.nome + " → " + rotuloSlot(slotAtual)); slotDialog.close();
+  });
+  $("#slot-remover").addEventListener("click", function () {
+    if (slotAtual === null) return;
+    var p = picto(st.slots[slotAtual]); st.slots[slotAtual] = null;
+    salvar(); renderPrancha(); toast((p ? p.nome : "Pictograma") + " removido"); slotDialog.close();
+  });
+  $("#slot-adicionar").addEventListener("click", function () { abrirNovoDoSlot = true; slotDialog.close(); });
   document.querySelectorAll("[data-open]").forEach(function (b) {
     b.addEventListener("click", function () { var d = document.getElementById(b.dataset.open); d.showModal(); });
   });
@@ -166,7 +217,7 @@
     $("#nova-cat").hidden = !nova;
     $("#nova-cat-nome").required = nova;
   }
-  $("#abrir-picto").addEventListener("click", function () {
+  function abrirPicto() {
     var s = $("#picto-cat"); s.innerHTML = "";
     st.categorias.forEach(function (c) {
       var o = el("option", { value: c.id }); o.textContent = c.emoji + " " + c.nome; s.appendChild(o);
@@ -176,7 +227,8 @@
     toggleNovaCat();
     $("#modal-picto").showModal();
     $("#picto-nome").focus();
-  });
+  }
+  $("#abrir-picto").addEventListener("click", abrirPicto);
   $("#picto-cat").addEventListener("change", toggleNovaCat);
   $("#form-picto").addEventListener("submit", function (e) {
     if (e.submitter && e.submitter.value === "cancel") { e.target.reset(); resetPictoEmojis(); toggleNovaCat(); return; }
@@ -304,5 +356,5 @@
   });
 
   if (window.RotinaOffline) window.RotinaOffline.register();
-  ajustarSlots(); renderRotina(); renderFiltros(); renderGaleria(); renderPrancha(); renderPeiAlunos(); renderRegistros();
+  ajustarSlots(); renderRotina(); renderFiltros(); renderGaleria(); renderPrancha(); renderPeiAlunos(); renderRegistros(); instrucao();
 })();
